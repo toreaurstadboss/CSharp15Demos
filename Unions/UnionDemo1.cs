@@ -78,6 +78,10 @@ public static class UnionExtensions
     /// <param name="t">The union type to inspect.</param>
     /// <returns>The distinct case types exposed by the union constructors.</returns>
     public static IReadOnlyList<Type> GetUnionCaseTypes(this Type t){
+
+            if (t == null || !typeof(IUnion).IsAssignableFrom(t)){
+                return Array.Empty<Type>(); //guard against null or non-union types, just return an empty result in this case
+            }
   
             return t
                 .GetConstructors(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
