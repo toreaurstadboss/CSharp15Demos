@@ -6,6 +6,7 @@ public static class ResultDemo1
         Queue<Result<int>> results = new Queue<Result<int>>();
 
         results.Enqueue(new Success<int>(42));
+        results.Enqueue(new Success<int>(118));
         results.Enqueue(new Error("Sorry, something went terribly wrong"));
 
         while (results.TryDequeue(out var result))
