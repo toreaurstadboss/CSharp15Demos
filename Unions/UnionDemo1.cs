@@ -12,12 +12,13 @@ public class Union1Demo
     /// </summary>
     public static void RunDemo()
     {
-        Console.WriteLine($"Pet union cases: {string.Join(", ", Pet.CaseTypes.Select(type => type.Name))}");
+        Console.WriteLine($"Pet union cases: {string.Join(", ", UnionExtensions.GetCaseTypes<Pet>().Select(type => type.Name))}");
 
         var somePets = new Pet[]{
             new Dog("Rex"),
             new Cat(7, "Whiskers"),
-            new Parrot(true, "Polly")
+            new Parrot(true, "Polly"),
+            new GoldFish(true, "Timmy")
         };
 
         foreach (var pet in somePets)
@@ -26,10 +27,10 @@ public class Union1Demo
         }
 
         Console.WriteLine();
-        Console.WriteLine("Listing all pet union case types:");
-        foreach (var caseType in UnionExtensions.GetCaseTypes<Pet>())
+        Console.WriteLine("Listing all pet union case types:\n-------------------------------------------");
+        foreach (var caseType in typeof(Pet).GetUnionCaseTypes())
         {
-            Console.Write(caseType.FullName);
+            Console.Write($"* {caseType.FullName}");
             Console.WriteLine($" with props: {string.Join(", ", caseType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).Select(p => p.Name))}");
         }
 
@@ -41,17 +42,18 @@ public class Union1Demo
 public record Dog(string Name);
 public record Cat(int NumberOfLives, string? Name = default);
 public record Parrot(bool WantsCrackers, string? Name = default);
+public record GoldFish(bool MakesBubbles, string? Name = default);
 
 
-union Pet(Dog, Cat, Parrot)
+union Pet(Dog, Cat, Parrot, GoldFish)
 {
-    public static IReadOnlyList<Type> CaseTypes { get; } = UnionExtensions.GetCaseTypes<Pet>();
 
     public string Description => this switch
     {
-        Cat cat => $"Meow! I got {cat.NumberOfLives} lives left",
-        Dog dog => $"Bark Bark! My name is {dog.Name}",
-        Parrot parrot => $"Squawk! {(parrot.WantsCrackers ? "I want crackers!" : "Give us a kiss!")}"
+        Cat cat => $"{cat.Name} says: Meow! I got {cat.NumberOfLives} lives left 🐈",
+        Dog dog => $"Bark Bark! {dog.Name} says! 🦴 🐕",
+        Parrot parrot => $"🦜Squawk! {parrot.Name} says: {(parrot.WantsCrackers ? "I want crackers!" : "Give us a kiss!")}",
+        GoldFish goldFish => $"🐠 {goldFish.Name} says: Blub Blub! {(goldFish.MakesBubbles ? "I make bubbles!" : "I don't make bubbles!")}"
     };
 }
 
